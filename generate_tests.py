@@ -159,7 +159,7 @@ class TestGenerator:
             logging.error(f"Error identifying related files in {file_name}: {e}")
        #print("language was "+ language + "\n")
        #print("related FILES HERE "+ ', '.join(related_files) + "\n")
-       limited_files = related_files[:2]
+       limited_files = related_files[:1]
        return limited_files #list
        
 
@@ -228,7 +228,7 @@ class TestGenerator:
         except Exception as e:
             logging.error(f"Error identifying related test files in {file_name}: {e}")
        #print("related FILES HERE "+ ', '.join(related_files) + "\n")
-        limited_test_files = related_test_files[:2]# List
+        limited_test_files = related_test_files[:1]# List
         return limited_test_files  # List
    
    
