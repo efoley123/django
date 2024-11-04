@@ -21,10 +21,10 @@ class TestGenerator:
        self.model = os.getenv('OPENAI_MODEL', 'gpt-4-turbo-preview').strip()
        
        try:
-           self.max_tokens = int(os.getenv('OPENAI_MAX_TOKENS', '2000'))
+           self.max_tokens = 20000#int(os.getenv('OPENAI_MAX_TOKENS', '2000'))
        except ValueError:
-           logging.error("Invalid value for OPENAI_MAX_TOKENS. Using default value: 2000")
-           self.max_tokens = 2000
+           logging.error("Invalid value for OPENAI_MAX_TOKENS. Using default value: 20000")
+           self.max_tokens = 20000
 
 
        
@@ -78,6 +78,16 @@ class TestGenerator:
                             
                             for part in parts:
                                 # Check for file extensions
+                                if part[0]=="." and part[1] != ".":
+                                    path = part.replace(".","")
+                                    for ext in ('.py', '.js', '.ts'):
+                                        potential_file = f"{path}{ext}"
+                                        #print(potential_file + "<-- from . \n")
+                                        if Path(potential_file).exists():
+                                            related_files.append(potential_file)
+                                            break  # 
+
+
                                 if '.' in part:
                                     path = part.replace(".","/")
                                     for ext in ('.py', '.js', '.ts'):
@@ -87,6 +97,7 @@ class TestGenerator:
                                             related_files.append(potential_file)
                                             break  # 
                                 else:
+
                                     if part.endswith(('.py', '.js', '.ts')) and Path(part).exists():
                                         related_files.append(part)
                                         
@@ -170,11 +181,43 @@ class TestGenerator:
                                 #going to now check each word in the line
                                 parts = line.split()
                                 for part in parts:
-                                    #now have each word chunk
-                                    potential_file = f"{part}{'.py'}"
-                                    if Path(potential_file).exists():
-                                        related_test_files.append(file.name)
-                                        break
+                                    for part in parts:
+                                        # Check for file extensions
+                                        if part[0]=="." and part[1] != ".":
+                                            path = part.replace(".","")
+                                            for ext in ('.py', '.js', '.ts'):
+                                                potential_file = f"{path}{ext}"
+                                                #print(potential_file + "<-- from . \n")
+                                                if Path(potential_file).exists():
+                                                    related_test_files.append(file)
+                                                    break  # 
+
+
+                                        elif '.' in part:
+                                            path = part.replace(".","/")
+                                            for ext in ('.py', '.js', '.ts'):
+                                                potential_file = f"{path}{ext}"
+                                            #print(potential_file + "<-- from . \n")
+                                                if Path(potential_file).exists():
+                                                    related_test_files.append(file)
+                                                    break  # 
+                                        else:
+
+                                            if part.endswith(('.py', '.js', '.ts')) and Path(part).exists():
+                                                related_test_files.append(file)
+                                        
+                                            # Check for class/module names without extensions
+                                            elif part.isidentifier():  # Checks if part is a valid identifier
+                                            # Construct potential file names
+                                                base_name = part.lower()  # Assuming file names are in lowercase
+                                                for ext in ('.py', '.js', '.ts','.js'):
+                                                    potential_file = f"{base_name}{ext}"
+                                                #print(potential_file + "<-- from regular \n")
+                                                if Path(potential_file).exists():
+                                                    related_test_files.append(file)
+                                                    break  # Found a related file, no need to check further extensions
+                                
+
     
         except Exception as e:
             logging.error(f"Error identifying related test files in {file_name}: {e}")
@@ -372,7 +415,7 @@ class TestGenerator:
                
                if prompt:
                    # Generate test cases from the API
-                   test_cases = self.call_openai_api(prompt)
+                   #test_cases = self.call_openai_api(prompt)
                    
                    
                    # Clean up quotation marks if test cases were generated
