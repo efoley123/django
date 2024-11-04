@@ -12,7 +12,7 @@ import sys
 import tempfile
 import warnings
 from pathlib import Path
-
+#testing this file right here
 try:
     import django
 except ImportError as e:
