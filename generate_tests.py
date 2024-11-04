@@ -403,29 +403,30 @@ class TestGenerator:
            return
 
        for file_name in changed_files:
-           try:
-               language = self.detect_language(file_name)
-               if language == 'Unknown':
-                   logging.warning(f"Unsupported file type: {file_name}")
-                   continue
+           if (file_name!="generate_tests.py"):
+            try:
+                language = self.detect_language(file_name)
+                if language == 'Unknown':
+                    logging.warning(f"Unsupported file type: {file_name}")
+                    continue
 
-               logging.info(f"Processing {file_name} ({language})")
-               prompt = self.create_prompt(file_name, language)
-               print(prompt)#CODE ADDED
-               
-               if prompt:
-                   # Generate test cases from the API
-                   #test_cases = self.call_openai_api(prompt)
-                   
-                   
-                   # Clean up quotation marks if test cases were generated
-                   if test_cases:
-                       test_cases = test_cases.replace("“", '"').replace("”", '"')
-                       self.save_test_cases(file_name, test_cases, language)
-                   else:
-                       logging.error(f"Failed to generate test cases for {file_name}")
-           except Exception as e:
-               logging.error(f"Error processing {file_name}: {e}")
+                logging.info(f"Processing {file_name} ({language})")
+                prompt = self.create_prompt(file_name, language)
+                #print(prompt)#CODE ADDED
+                
+                if prompt:
+                    # Generate test cases from the API
+                    #test_cases = self.call_openai_api(prompt)
+                    
+                    
+                    # Clean up quotation marks if test cases were generated
+                    if test_cases:
+                        test_cases = test_cases.replace("“", '"').replace("”", '"')
+                        self.save_test_cases(file_name, test_cases, language)
+                    else:
+                        logging.error(f"Failed to generate test cases for {file_name}")
+            except Exception as e:
+                logging.error(f"Error processing {file_name}: {e}")
 
 
 if __name__ == '__main__':
