@@ -419,7 +419,7 @@ class TestGenerator:
 
                 logging.info(f"Processing {file_name} ({language})")
                 prompt = self.create_prompt(file_name, language)
-                #print(prompt)#CODE ADDED
+                print(prompt)#CODE ADDED
                 
                 if prompt:
                     # Generate test cases from the API
