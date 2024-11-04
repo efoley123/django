@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import models
 
-
+#testing
 class Band(models.Model):
     name = models.CharField(max_length=100)
     bio = models.TextField()
