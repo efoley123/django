@@ -1,99 +1,95 @@
 import pytest
-from django.contrib.admin.sites import AdminSite
-from django.contrib.auth.models import User
-from django.http import HttpRequest
-from django.test import TestCase
 from mixer.backend.django import mixer
-from unittest.mock import patch
-
+from django.contrib.auth.models import User
 from your_app.models import Band, Song
 from your_app.admin import DynOrderingBandAdmin, SongInlineDefaultOrdering, SongInlineNewOrdering
+from django.contrib.admin.sites import AdminSite
+from django.http import HttpRequest
 
 pytestmark = pytest.mark.django_db
 
-class TestBandModel:
-    def test_create_band(self):
+class TestBand:
+    def test_band_creation(self):
         """
-        Test normal case for creating a Band instance.
+        Ensure we can create a Band instance.
         """
-        band = mixer.blend(Band, name="Nirvana", bio="Grunge band", rank=1)
-        assert band.name == "Nirvana"
-        assert band.bio == "Grunge band"
-        assert band.rank == 1
+        band = mixer.blend(Band, name="Test Band", bio="Test Bio", rank=1)
+        assert band.name == "Test Band", "Should create a band with a name"
+        assert band.bio == "Test Bio", "Should create a band with a bio"
+        assert band.rank == 1, "Should create a band with a rank"
 
     def test_band_ordering(self):
         """
-        Test the Meta class ordering of Band model.
+        Ensure Band instances are ordered correctly.
         """
-        band1 = mixer.blend(Band, name="Zebra")
-        band2 = mixer.blend(Band, name="Armadillo")
+        mixer.blend(Band, name="Band Z")
+        mixer.blend(Band, name="Band A")
         bands = Band.objects.all()
-        assert bands[0].name == "Armadillo"
-        assert bands[1].name == "Zebra"
+        assert bands[0].name == "Band A", "Should be ordered by name ascending"
 
-class TestSongModel:
-    def test_create_song(self):
+class TestSong:
+    def test_song_creation(self):
         """
-        Test normal case for creating a Song instance.
+        Ensure we can create a Song instance.
         """
         band = mixer.blend(Band)
-        song = mixer.blend(Song, band=band, name="Smells Like Teen Spirit", duration=300)
-        assert song.band == band
-        assert song.name == "Smells Like Teen Spirit"
-        assert song.duration == 300
+        song = mixer.blend(Song, name="Test Song", duration=320, band=band)
+        assert song.name == "Test Song", "Should create a song with a name"
+        assert song.duration == 320, "Should create a song with a duration"
+        assert song.band == band, "Should associate the song with a band"
 
     def test_song_ordering(self):
         """
-        Test the Meta class ordering of Song model.
+        Ensure Song instances are ordered correctly.
         """
         band = mixer.blend(Band)
-        song1 = mixer.blend(Song, name="Zephyr Song", band=band)
-        song2 = mixer.blend(Song, name="Californication", band=band)
+        mixer.blend(Song, name="Song Z", band=band)
+        mixer.blend(Song, name="Song A", band=band)
         songs = Song.objects.all()
-        assert songs[0].name == "Californication"
-        assert songs[1].name == "Zephyr Song"
+        assert songs[0].name == "Song A", "Should be ordered by name ascending"
 
-class TestDynOrderingBandAdmin:
-    def test_superuser_ordering(self, rf):
-        """
-        Test the get_ordering method for a superuser request.
-        """
-        site = AdminSite()
-        admin = DynOrderingBandAdmin(Band, site)
-        request = rf.get('/')
+class TestAdmin:
+    @pytest.fixture
+    def superuser_request(self):
+        request = HttpRequest()
         request.user = mixer.blend(User, is_superuser=True)
-        ordering = admin.get_ordering(request)
-        assert ordering == ["rank"]
+        return request
 
-    def test_regular_user_ordering(self, rf):
+    @pytest.fixture
+    def regular_user_request(self):
+        request = HttpRequest()
+        request.user = mixer.blend(User, is_superuser=False)
+        return request
+
+    def test_dyn_ordering_band_admin_superuser(self, superuser_request):
         """
-        Test the get_ordering method for a regular user request.
+        Ensure superuser sees Bands ordered by rank.
         """
         site = AdminSite()
         admin = DynOrderingBandAdmin(Band, site)
-        request = rf.get('/')
-        request.user = mixer.blend(User, is_superuser=False)
-        ordering = admin.get_ordering(request)
-        assert ordering == ["name"]
+        ordering = admin.get_ordering(superuser_request)
+        assert ordering == ["rank"], "Superuser should see bands ordered by rank"
 
-@pytest.fixture
-def band_and_songs(db):
-    band = mixer.blend(Band)
-    song1 = mixer.blend(Song, band=band, name="Learn to Fly")
-    song2 = mixer.blend(Song, band=band, name="Everlong")
-    return band, [song1, song2]
+    def test_dyn_ordering_band_admin_regular_user(self, regular_user_request):
+        """
+        Ensure regular user sees Bands ordered by name.
+        """
+        site = AdminSite()
+        admin = DynOrderingBandAdmin(Band, site)
+        ordering = admin.get_ordering(regular_user_request)
+        assert ordering == ["name"], "Regular user should see bands ordered by name"
 
 class TestSongInlineOrdering:
-    def test_default_ordering(self, band_and_songs):
+    def test_song_inline_default_ordering(self):
         """
-        Test that SongInlineDefaultOrdering has no custom ordering.
+        Ensure SongInlineDefaultOrdering has no custom ordering.
         """
         inline = SongInlineDefaultOrdering(Band, AdminSite())
-        assert inline.get_ordering(None) is None
+        assert inline.get_ordering(None) is None, "Default ordering should be None"
 
-    def test_new_ordering(self, band_and_songs):
+    def test_song_inline_new_ordering(self):
         """
-        Test that SongInlineNewOrdering uses duration for ordering.
+        Ensure SongInlineNewOrdering uses duration for ordering.
         """
         inline = SongInlineNewOrdering(Band, AdminSite())
-        assert inline.ordering == ("duration",)
+        assert inline.ordering == ("duration",), "Should be ordered by duration"
