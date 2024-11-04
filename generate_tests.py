@@ -21,7 +21,7 @@ class TestGenerator:
        self.model = os.getenv('OPENAI_MODEL', 'gpt-4-turbo-preview').strip()
        
        try:
-           self.max_tokens = int(os.getenv('10000'))
+           self.max_tokens = 10000
        except ValueError:
            logging.error("Invalid value for OPENAI_MAX_TOKENS. Using default value: 10000")
            self.max_tokens = 2000
