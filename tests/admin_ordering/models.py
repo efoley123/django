@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.db import models
-
-
+#changing a line right here
 # testing right here
 class Band(models.Model):
     name = models.CharField(max_length=100)
