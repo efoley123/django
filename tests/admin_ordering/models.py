@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import models
 
-
+#tests 1 file now??
 # testing right here
 class Band(models.Model):
     name = models.CharField(max_length=100)
