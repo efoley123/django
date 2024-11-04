@@ -193,7 +193,7 @@ class TestGenerator:
                                                 #print(str(Path(potential_file).exists()) + "<-- this is saying whether it exsists and this is potential_file "+str(potential_file)+"\n")
                                                 
                                                 if (Path(file_name).exists() and (stringPotentialFile in str(file_name))):
-                                                    related_test_files.append(file)
+                                                    related_test_files.append(str(file))
                                                     break  # 
 
 
@@ -204,12 +204,12 @@ class TestGenerator:
                                             #print(potential_file + "<-- from . \n")
                                                 stringPotentialFile = str(potential_file)
                                                 if Path(file_name).exists() and (stringPotentialFile in str(file_name)):
-                                                    related_test_files.append(file)
+                                                    related_test_files.append(str(file))
                                                     break  # 
                                         else:
 
                                             if part.endswith(('.py', '.js', '.ts')) and Path(part).exists() and ((str(file_name)) in str(part)):
-                                                related_test_files.append(file)
+                                                related_test_files.append(str(file))
                                         
                                             # Check for class/module names without extensions
                                             elif part.isidentifier():  # Checks if part is a valid identifier
