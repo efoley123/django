@@ -160,7 +160,7 @@ class TestGenerator:
                 #need to look at the directory for python test files
                 #print("this is the directory"+str(directory)+"\n")
                 #just going to look in current directory
-                test_files = list(directory.rglob("test_*.py")) + list(directory.rglob("*_test.py"))
+                test_files = list(directory.rglob("test_*.py")) + list(directory.rglob("*_test.py")) + list(directory.rglob("test.py"))
                 #print("\n related TEST FILES HERE "+ ', '.join(str(file) for file in test_files) + "\n")
                 #print("print statement above\n")
                 for file in test_files:
