@@ -6,7 +6,7 @@ from collections import Counter, defaultdict
 from functools import partial
 
 from django.core.exceptions import AppRegistryNotReady, ImproperlyConfigured
-
+#test this file
 from .config import AppConfig
 
 
