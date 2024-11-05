@@ -109,7 +109,7 @@ class TestGenerator:
 
        except Exception as e:
             logging.error(f"Error identifying related files in {file_name}: {e}")
-       print("related FILES HERE "+ ', '.join(related_files) + "\n")
+       #print("related FILES HERE "+ ', '.join(related_files) + "\n")
        limited_files = related_files[:1]# List
        return limited_files  # List
 
@@ -187,6 +187,11 @@ class TestGenerator:
         related_files = self.get_related_files(language, file_name)
         related_content = ""
 
+        # Log related files to confirm detection
+        if related_files:
+            logging.info(f"Related files for {file_name}: {related_files}")
+        else:
+            logging.info(f"No related files found for {file_name} to reference")
         for related_file in related_files:
             try:
                 with open(related_file, 'r') as rf:
@@ -203,6 +208,7 @@ class TestGenerator:
                 logging.error(f"Error reading related file {related_file}: {e}")
 
         # Gather additional context from related test files
+        
         related_test_files = self.get_related_test_files(language, file_name)
         related_test_content = ""
         # Log related files to confirm detection
@@ -241,7 +247,6 @@ class TestGenerator:
         {related_content}
 
         Related test cases:
-
         {related_test_content}
 
         Generate only the test code without any explanations or notes."""
