@@ -19,7 +19,7 @@ class TestGenerator:
        self.model = os.getenv('OPENAI_MODEL', 'gpt-4-turbo-preview')
        
        try:
-           self.max_tokens = int(os.getenv('OPENAI_MAX_TOKENS', '2000'))
+           self.max_tokens = 100000#int(os.getenv('OPENAI_MAX_TOKENS', '2000'))
        except ValueError:
            logging.error("Invalid value for OPENAI_MAX_TOKENS. Using default value: 2000")
            self.max_tokens = 2000
@@ -110,7 +110,8 @@ class TestGenerator:
        except Exception as e:
             logging.error(f"Error identifying related files in {file_name}: {e}")
        print("related FILES HERE "+ ', '.join(related_files) + "\n")
-       return related_files  # List
+       limited_files = related_files[:1]# List
+       return limited_files  # List
 
    def get_related_test_files(self, language: str, file_name: str) -> List[str]:
         related_test_files = []#Identify related files based on import statements or includes.
